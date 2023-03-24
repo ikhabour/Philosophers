@@ -6,7 +6,7 @@
 /*   By: ikhabour <ikhabour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 21:28:01 by ikhabour          #+#    #+#             */
-/*   Updated: 2023/03/24 21:31:15 by ikhabour         ###   ########.fr       */
+/*   Updated: 2023/03/24 23:30:58 by ikhabour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,16 @@ int	check_arguments(int argc, char **argv)
 	i = 1;
 	j = 0;
 	if (argc != 5 && argc != 6)
-	{
-		write(2, "Invalid Arguments\n", 18);
-		return (1);
-	}
+		return (print_error("Invalid Arguments\n", 18, 1));
 	while (argv[i])
 	{
 		j = 0;
 		while (argv[i][j])
 		{
 			if (argv[i][0] == '-')
-			{
-				write(2, "Invalid Arguments\n", 18);
-				return (1);
-			}
+				return (print_error("Invalid Arguments\n", 18, 1));
 			if (!ft_isdigit(argv[i][j]))
-			{
-				write(2, "Invalid Arguments\n", 18);
-				return (1);
-			}
+				return (print_error("Invalid Arguments\n", 18, 1));
 			j++;
 		}
 		i++;
@@ -72,7 +63,7 @@ void	time_sleep(int sleep_time)
 	}
 }
 
-void	philo_init(t_philo **philo_info, t_list args, time_t begin)
+int	philo_init(t_philo **philo_info, t_list args, time_t begin)
 {
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*mtx_write;
@@ -82,22 +73,21 @@ void	philo_init(t_philo **philo_info, t_list args, time_t begin)
 	forks = malloc(sizeof(pthread_mutex_t) * args.philo_num);
 	*philo_info = malloc(sizeof(t_philo) * args.philo_num);
 	if (pthread_mutex_init(mtx_write, NULL) != 0)
-		write(2, "Init failiure\n", 14);
-	mutex_init(forks, args.philo_num);
+		return (print_error("Init failure\n", 14, 1));
+	if (mutex_init(forks, args.philo_num))
+		return (print_error("Init failure\n", 14, 1));
 	i = 0;
 	while (i < args.philo_num)
 	{
 		(*philo_info)[i].forks.right = &(forks[i]);
 		(*philo_info)[i].forks.left = &(forks[(i + 1) % args.philo_num]);
 		(*philo_info)[i].write = mtx_write;
-		(*philo_info)[i].id = i + 1;
-		(*philo_info)[i].meals_ate = 0;
-		(*philo_info)[i].list = args;
-		(*philo_info)[i].begin = begin;
-		(*philo_info)[i].last_meal = begin;
-		pthread_mutex_init(&(*philo_info)[i].mtx_status, NULL);
+		if (pthread_mutex_init(&(*philo_info)[i].mtx_status, NULL))
+			return (print_error("Init failure\n", 14, 1));
 		i++;
 	}
+	init_vars(philo_info, args, begin);
+	return (0);
 }
 
 int	args_init(t_list *args, char **argv)
@@ -108,18 +98,12 @@ int	args_init(t_list *args, char **argv)
 	args->time_to_sleep = ft_atoi(argv[4]);
 	if (args->philo_num <= 0 || args->time_to_die <= 0 || args->eat_time <= 0
 		|| args->time_to_sleep <= 0)
-	{
-		write(2, "Invalid Arguments\n", 18);
-		return (1);
-	}
+		return (print_error("Invalid Arguments\n", 18, 1));
 	if (argv[5])
 	{
 		args->meals = ft_atoi(argv[5]);
 		if (args->meals <= 0)
-		{
-			write(2, "Invalid Arguments\n", 18);
-			return (1);
-		}
+			return (print_error("Invalid Arguments\n", 18, 1));
 	}
 	else
 		args->meals = -1;

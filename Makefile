@@ -4,6 +4,7 @@ CFLAGS = -Wextra -Werror -Wall
 SRCS =	philosophers.c\
 		philo_utils.c\
 		philo_utils1.c\
+		philo_utils2.c
 
 OBJECTS = ${SRCS:.c=.o}
 
