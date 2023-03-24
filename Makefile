@@ -2,7 +2,8 @@ NAME = philo
 CC = cc
 CFLAGS = -Wextra -Werror -Wall
 SRCS =	philosophers.c\
-		ft_atoi.c\
+		philo_utils.c\
+		philo_utils1.c\
 
 OBJECTS = ${SRCS:.c=.o}
 
