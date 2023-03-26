@@ -6,7 +6,7 @@
 /*   By: ikhabour <ikhabour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 22:51:09 by ikhabour          #+#    #+#             */
-/*   Updated: 2023/03/24 21:33:45 by ikhabour         ###   ########.fr       */
+/*   Updated: 2023/03/26 01:18:45 by ikhabour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	create_philosophers(int philo_num, t_philo *philo_info)
 	i = 0;
 	while (i < philo_num)
 	{
-		pthread_create(&(philo_info->philos), NULL, routine, &(philo_info[i]));
+		pthread_create(&(philo_info[i].philos), NULL, routine, &(philo_info[i]));
 		usleep(100);
 		i++;
 	}
@@ -76,7 +76,8 @@ int	main(int argc, char **argv)
 	if (args_init(&args, argv))
 		return (1);
 	begin = get_time(0);
-	philo_init(&philo_info, args, begin);
+	if (philo_init(&philo_info, args, begin))
+		return (1);
 	create_philosophers(ft_atoi(argv[1]), philo_info);
 	while (i < ft_atoi(argv[1]))
 		pthread_detach(philo_info[i++].philos);
